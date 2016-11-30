@@ -129,8 +129,6 @@ export const isInAnyWord = (data, row, col) => {
   return _.some(data, (clue) => isInWord(clue, row, col))
 }
 
-
-
 export const replaceChar = (string, letter, index) => {
   if (string.length <= index ) {
     return string
@@ -149,13 +147,55 @@ export const setInputLetter = (string, letter, index) => {
   return string
 }
 
+export const getInputLetter = (data, row, col) => {
+  let hasInputs = isInAnyWord(data, row, col)
+
+  if (!hasInputs) { return }
+
+  let inputLetters = _.reduce(data, ((m, clue) => {
+    if (isInWord(clue, row, col)) {
+      let input = clue.input || ''
+      let letter
+      if (input && clue.orientation === 'h') {
+        letter = input.split('')[col - clue.pivot[1]]
+      } else if (input && clue.orientation === 'v') {
+        letter = input.split('')[row - clue.pivot[0]]
+      }
+      if (letter) { m.push(letter) }
+    }
+
+    return m
+  }), [])
+
+  return _.first(inputLetters)
+}
+
+export const gridFromData = (data) => {
+  let rows = data.reduce((m, i) => _.max([i.orientation === 'v' ? i.pivot[0] + i.word.length : 0, m]), 0)
+  let cols = data.reduce((m, i) => _.max([i.orientation === 'h' ? i.pivot[1] + i.word.length : 0, m]), 0)
+
+  return _.map (_.range(0, rows), (row) => {
+    return _.map (_.range(0, cols), (col) => {
+      let letter      = getLetterInData(data, row, col)
+      let inputLetter = getInputLetter(data, row, col)
+      let clue        = _.find(data, (clue) => clue.pivot[0] === row && clue.pivot[1] === col)
+
+      return {
+        letter:      letter,
+        inputLetter: inputLetter,
+        clue:        clue
+      }
+    })
+  })
+}
+
 // ------------------------------------
 // Actions
 // ------------------------------------
-export function setWordInput(index = 0, value = '') {
+export function setWordInput(nr = 1, value = '') {
   return {
     type:    SET_WORD_INPUT,
-    payload: { index: index, value: value }
+    payload: { nr: nr, value: value }
   }
 }
 
@@ -190,19 +230,27 @@ export const actions = {
 const ACTION_HANDLERS = {
   [SET_WORD_INPUT]: (state, action) => {
     let newData = _.cloneDeep(state.data)
-    let clue    = newData[action.payload.index]
+    let clue    = _.find(newData, (clue) => clue.nr === action.payload.nr)
     let row, col
 
     [row, col] = clue.pivot
 
     // clue.input = action.payload.value
-
     switch (clue.orientation) {
       case 'h':
         _.each(action.payload.value.split(''), (letter, i) => {
           _.each(newData, (clue) => {
             if (isInWord(clue, row, col + i)) {
-              clue.input = setInputLetter(clue.input, letter, i)
+              let offset
+              switch (clue.orientation) {
+                case 'h':
+                  offset = col + i - clue.pivot[1]
+                  break
+                case 'v':
+                  offset = row - clue.pivot[0]
+                  break
+              }
+              clue.input = setInputLetter(clue.input, letter, offset)
             }
           })
         })
@@ -211,14 +259,27 @@ const ACTION_HANDLERS = {
         _.each(action.payload.value.split(''), (letter, i) => {
           _.each(newData, (clue) => {
             if (isInWord(clue, row + i, col)) {
-              clue.input = setInputLetter(clue.input, letter, i)
+
+              let offset
+              switch (clue.orientation) {
+                case 'h':
+                  offset = col - clue.pivot[1]
+                  break
+                case 'v':
+                  offset = row + i - clue.pivot[0]
+                  break
+              }
+              clue.input = setInputLetter(clue.input, letter, offset)
             }
           })
         })
         break
     }
 
-    return _.assign({}, state, { data: newData })
+    return {
+      data: newData,
+      grid: gridFromData(newData)
+    }
   }
 }
 
@@ -230,8 +291,7 @@ let data = getInitialData(DATA)
 
 const initialState = {
   data: data,
-  rows: data.reduce((m, i) => _.max([i.orientation === 'v' ? i.pivot[0] + i.word.length : 0, m]), 0),
-  cols: data.reduce((m, i) => _.max([i.orientation === 'h' ? i.pivot[1] + i.word.length : 0, m]), 0)
+  grid: gridFromData(data)
 }
 
 export default function puzzleReducer (state = initialState, action) {

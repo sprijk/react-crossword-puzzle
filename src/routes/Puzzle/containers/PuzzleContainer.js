@@ -16,19 +16,10 @@ const mapDispatchToProps = {
   setWordInput: setWordInput
 }
 
-// const mapStateToProps = (state) => ({
-//   counter: state.puzzle.counter,
-//   rows:    state.puzzle.rows,
-//   cols:    state.puzzle.cols,
-//   input:   state.puzzle.input
-// })
-
 function mapStateToProps (state) {
   return {
-    counter: state.puzzle.counter,
-    rows:    state.puzzle.rows,
-    cols:    state.puzzle.cols,
-    data:    state.puzzle.data
+    grid: state.puzzle.grid,
+    data: state.puzzle.data
   }
 }
 
