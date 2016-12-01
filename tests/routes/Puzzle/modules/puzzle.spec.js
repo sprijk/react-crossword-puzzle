@@ -2,7 +2,6 @@ import {
   getInitialData,
   getLetterInClue,
   getLetterInData,
-  getNumberInData,
   isInAnyWord,
   isInWord,
   replaceChar,

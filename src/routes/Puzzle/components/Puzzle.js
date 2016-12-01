@@ -1,27 +1,32 @@
 import React from 'react'
 import _ from 'lodash'
-import { Modal, Button } from 'react-bootstrap'
+import {
+  Modal,
+  Button,
+  ProgressBar
+} from 'react-bootstrap'
+import './Puzzle.scss'
 
 class InputLetter extends React.Component {
-  focus() {
+  focus = () => {
     this.textInput.focus()
   }
 
-  onKeyUp(e) {
+  onKeyUp = (e) => {
     let value = this.textInput.value
     value = _.first(value.split('')) || ''
     this.textInput.value = value
-    this.props.onInput(e, this.props.nr, value)
+    this.props.onInput(e, this.props.index, value)
   }
 
-  onFocus() {
-    // this.textInput.select()
+  onFocus = () => {
+    this.textInput.select()
   }
 
   componentDidMount() {
-    // if (this.props.nr === 0) {
-    //   this.focus()
-    // }
+    if (this.props.index === 0) {
+      this.focus()
+    }
   }
 
   render() {
@@ -54,27 +59,26 @@ class InputLetter extends React.Component {
 }
 
 class InputLetters extends React.Component {
-  letterUpdate(e, nr, letter) {
-    // let index       = this.props.index
-    // let word        = this.props.clue.word
-    // let isLetter    = 64 < e.keyCode && e.keyCode < 91
-    // let isBackspace = e.keyCode === 8
+  letterUpdate = (e, index, letter) => {
+    let word        = this.props.clue.word
+    let isLetter    = 64 < e.keyCode && e.keyCode < 91
+    let isBackspace = e.keyCode === 8
 
-    // if (isLetter) {
-    //   if (this.refs[`letter-${nr + 1}`]) {
-    //     this.refs[`letter-${nr + 1}`].focus()
-    //   } else {
-    //     let letters = _.map(word.split(''), (letter, i) =>  this.refs[`letter-${i}`].textInput.value)
-    //     this.props.onWordDone(index, letters.join(''))
-    //   }
-    // } else if (isBackspace) {
-    //   if (this.refs[`letter-${nr - 1}`]) {
-    //     this.refs[`letter-${nr - 1}`].focus()
-    //   }
-    // }
+    if (isLetter) {
+      if (this.refs[`letter-${index + 1}`]) {
+        this.refs[`letter-${index + 1}`].focus()
+      } else {
+        let letters = _.map(word.split(''), (letter, i) =>  this.refs[`letter-${i}`].textInput.value)
+        this.props.onWordDone(this.props.clueIndex, letters.join(''))
+      }
+    } else if (isBackspace) {
+      if (this.refs[`letter-${index - 1}`]) {
+        this.refs[`letter-${index - 1}`].focus()
+      }
+    }
   }
 
-  render() {
+  render = () => {
     return (
       <div>
         {
@@ -83,6 +87,7 @@ class InputLetters extends React.Component {
               <InputLetter
                 key         = { `letter-${i}` }
                 ref         = { `letter-${i}` }
+                index       = { i }
                 inputLetter = { this.props.clue.input.charAt(i) || '' }
                 clue        = { this.props.clue }
                 onInput     = { this.letterUpdate }
@@ -98,13 +103,15 @@ class InputLetters extends React.Component {
 class InputWord extends React.Component {
   state = { showModal: false }
 
-  close = (value) => {
+  close = (index, value) => {
     this.setState({ showModal: false })
-    // this.props.setWordInput(this.props.clue.nr, value)
+    this.props.onWordInput(index, value)
   }
 
   open = () => {
-    this.setState({ showModal: true })
+    if (this.props.game === 'started') {
+      this.setState({ showModal: true })
+    }
   }
 
   render = () => (
@@ -131,7 +138,7 @@ class InputWord extends React.Component {
         }}
         onClick={ this.open }
       ></a>
-      <Modal show={this.state.showModal} onHide={this.close}>
+      <Modal show={this.props.game === 'started' && this.state.showModal} onHide={this.close}>
         <Modal.Header closeButton>
           <Modal.Title>Vul antwoord in voor:</Modal.Title>
         </Modal.Header>
@@ -142,8 +149,9 @@ class InputWord extends React.Component {
           <div className='row'>
             <div className='col-xs-12'>
               <InputLetters
+                clueIndex  = { this.props.clueIndex }
                 clue       = { this.props.clue }
-                onWordDone = { (value) => this.close(value) }
+                onWordDone = { (index, value) => this.close(index, value) }
               />
             </div>
           </div>
@@ -157,7 +165,7 @@ class InputWord extends React.Component {
 
 const Cell = (props) => (
   <div
-    className = "grid-cell"
+    className = 'grid-cell'
     style     = {{
       position:        'relative',
       width:           32,
@@ -175,8 +183,10 @@ const Cell = (props) => (
         {
           props.cell.clue
             ? <InputWord
-                clue         = { props.cell.clue }
-                setWordInput = { props.setWordInput }
+                clueIndex   = { props.cell.clueIndex }
+                clue        = { props.cell.clue }
+                onWordInput = { props.onWordInput }
+                game        = { props.game }
               />
             : ''
         }
@@ -192,11 +202,12 @@ const Row = (props) => (
     {
       _.map(props.cols, (cell, i) =>
         <Cell
-          key          = { `cell-${props.row}-${i}` }
-          row          = { props.row }
-          col          = { i }
-          cell         = { cell }
-          setWordInput = { props.setWordInput }
+          key         = { `cell-${props.row}-${i}` }
+          row         = { props.row }
+          col         = { i }
+          cell        = { cell }
+          game        = { props.game }
+          onWordInput = { props.onWordInput }
         />
       )
     }
@@ -208,10 +219,11 @@ const Grid = (props) => {
     <div className='grid-main'>
       {
         _.map(props.grid, (cols, i) => <Row
-            key          = { `row-${i}` }
-            row          = { i }
-            cols         = { cols }
-            setWordInput = { props.setWordInput }
+            key         = { `row-${i}` }
+            row         = { i }
+            cols        = { cols }
+            game        = { props.game }
+            onWordInput = { props.onWordInput }
           />
         )
       }
@@ -252,21 +264,96 @@ const Clues = (props) => (
   </div>
 )
 
-const Puzzle = (props) => (
-  <div style={{ margin: '0 auto' }} >
-    <h2>Los de puzzel op!</h2>
-    <div className="row">
-      <div className="col-lg-7 col-md-9">
-        <Grid
-          grid         = { props.grid }
-          setWordInput = { props.setWordInput }
-        />
+let interval
+
+class Puzzle extends React.Component {
+  onWordInput = (index, value) => {
+    this.props.setWordInput(index, value)
+  }
+
+  onGo = () => {
+    this.props.setGameState('started')
+  }
+
+  componentDidMount = () => {
+    clearInterval(interval)
+    interval = setInterval(() => {
+      if(this.props.game === 'started') {
+        this.props.incrementTimer()
+      }
+    }, 1000)
+  }
+
+  render = () => {
+    return (
+      <div style={{ margin: '0 auto' }} >
+        <div className='row'>
+          <div className='col-md-offset-2 col-md-10' style={{
+            minHeight: '140px'
+          }}>
+            {
+              this.props.game === 'started'
+                ? <ProgressBar bsStyle='warning' now={ this.props.timer } />
+                : <div>
+                    {
+                      this.props.solved
+                        ? <div>
+                            <h4>Het is je gelukt!!</h4>
+                            <p>De code is <span className='game__code'>{ this.props.code }</span></p>
+                          </div>
+                        : <div>
+                            <h4>{
+                              this.props.game === 'over'
+                              ? 'Helaas buiten de tijd!! Probeer het nog een keer.'
+                              : 'Ben je er klaar voor?'
+                            }</h4>
+                            <p>Druk op de knop om te starten!</p>
+                            <div className='row'>
+                              <div className='col-xs-12'>
+                                <Button onClick={ this.onGo } bsStyle="primary" bsSize="large">Gaan met die banaan!</Button>
+                              </div>
+                            </div>
+                          </div>
+                    }
+                  </div>
+            }
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-lg-7 col-md-9'>
+            <Grid
+              game        = { this.props.game }
+              grid        = { this.props.grid }
+              onWordInput = { this.onWordInput }
+            />
+          </div>
+          <div className='col-lg-5 col-md-3'>
+            <Clues data={ this.props.data } />
+          </div>
+        </div>
+
       </div>
-      <div className="col-lg-5 col-md-3">
-        <Clues data={ props.data } />
-      </div>
-    </div>
-  </div>
-)
+    )
+  }
+}
+
+/*
+        <Modal show={ this.props.game !== 'started' }>
+          <Modal.Header>
+            <Modal.Title>Ben je er klaar voor?</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Druk op de knop om te starten!</p>
+            <div className='row'>
+              <div className='col-xs-12'>
+                <Button onClick={ this.onGo } bsStyle="primary" bsSize="large">Gaan met die banaan!</Button>
+              </div>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+          </Modal.Footer>
+        </Modal>
+
+*/
 
 export default Puzzle

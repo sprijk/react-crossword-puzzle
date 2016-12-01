@@ -54,7 +54,13 @@ export const DATA = [
 // ------------------------------------
 // Constants
 // ------------------------------------
-export const SET_WORD_INPUT = 'SET_WORD_INPUT'
+export const TIMER_MAX        = 100
+export const TIMER_STEP       = 5
+export const CODE             = '1234'
+export const SET_WORD_INPUT   = 'SET_WORD_INPUT'
+export const SET_GAME_STATE   = 'SET_GAME_STATE'
+export const RESET_TIMER      = 'RESET_TIMER'
+export const INCEREMENT_TIMER = 'INCEREMENT_TIMER'
 
 // ------------------------------------
 // Helper functions
@@ -83,17 +89,6 @@ export const getLetterInClue = (clue, row, col) => {
   }
 
   return letter
-}
-
-export const getNumberInData = (data, row, col) => {
-  return _.chain(data)
-    .map((clue) =>
-      clue.pivot[0] === row && clue.pivot[1] === col
-        ? clue.nr
-        : null
-    )
-    .compact()
-    .value()[0]
 }
 
 export const getLetterInData = (data, row, col) => {
@@ -179,11 +174,13 @@ export const gridFromData = (data) => {
       let letter      = getLetterInData(data, row, col)
       let inputLetter = getInputLetter(data, row, col)
       let clue        = _.find(data, (clue) => clue.pivot[0] === row && clue.pivot[1] === col)
+      let clueIndex   = _.findIndex(data, clue)
 
       return {
         letter:      letter,
         inputLetter: inputLetter,
-        clue:        clue
+        clue:        clue,
+        clueIndex:   clueIndex
       }
     })
   })
@@ -192,10 +189,36 @@ export const gridFromData = (data) => {
 // ------------------------------------
 // Actions
 // ------------------------------------
-export function setWordInput(nr = 1, value = '') {
+// export function setTimer(value = 0) {
+//   return {
+//     type:    SET_TIMER,
+//     payload: value
+//   }
+// }
+
+export function incrementTimer() {
+  return  {
+    type: INCEREMENT_TIMER
+  }
+}
+
+export function resetTimer() {
+  return  {
+    type: RESET_TIMER
+  }
+}
+
+export function setWordInput(index = 0, value = '') {
   return {
     type:    SET_WORD_INPUT,
-    payload: { nr: nr, value: value }
+    payload: { index: index, value: value }
+  }
+}
+
+export function setGameState(value = 'stopped') {
+  return {
+    type:    SET_GAME_STATE,
+    payload: value
   }
 }
 
@@ -221,6 +244,9 @@ export function setWordInput(nr = 1, value = '') {
 export const actions = {
   // increment,
   // doubleAsync,
+  incrementTimer,
+  resetTimer,
+  setGameState,
   setWordInput
 }
 
@@ -228,9 +254,49 @@ export const actions = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [SET_WORD_INPUT]: (state, action) => {
+  [RESET_TIMER]: (state) => {
+    return _.assign({}, state, { timer: TIMER_MAX })
+  },
+
+  [INCEREMENT_TIMER]: (state) => {
+    let game  = state.game
+    let timer = state.timer - TIMER_STEP
+    if (timer < 0) { timer = 0 }
+    if (timer === 0) {
+      game = 'over'
+    }
+    return _.assign({}, state, { timer: timer, game: game })
+  },
+
+  [SET_GAME_STATE]: (state, action) => {
+    let game    = action.payload
+    let timer   = state.timer
     let newData = _.cloneDeep(state.data)
-    let clue    = _.find(newData, (clue) => clue.nr === action.payload.nr)
+
+    switch (game) {
+      case 'started':
+        timer = TIMER_MAX
+        break;
+      case 'stopped':
+        break;
+    }
+
+    newData = _.map(data, (clue) => {
+      clue.input = ''
+      return clue
+    })
+
+    let grid = gridFromData(newData)
+
+    return _.assign({}, state, { game: game, timer: timer, data: data, grid: grid })
+  },
+
+  [SET_WORD_INPUT]: (state, action) => {
+    let newData    = _.cloneDeep(state.data)
+    let clue       = newData[action.payload.index]
+    let correct    = false
+    let timer      = state.timer
+    let allCorrect = false
     let row, col
 
     [row, col] = clue.pivot
@@ -250,7 +316,9 @@ const ACTION_HANDLERS = {
                   offset = row - clue.pivot[0]
                   break
               }
-              clue.input = setInputLetter(clue.input, letter, offset)
+              clue.input   = setInputLetter(clue.input, letter, offset)
+              clue.correct = clue.input === clue.word
+              correct      = clue.correct
             }
           })
         })
@@ -269,17 +337,23 @@ const ACTION_HANDLERS = {
                   offset = row + i - clue.pivot[0]
                   break
               }
-              clue.input = setInputLetter(clue.input, letter, offset)
+              clue.input   = setInputLetter(clue.input, letter, offset)
+              clue.correct = clue.input === clue.word
+              correct      = clue.correct
             }
           })
         })
         break
     }
 
-    return {
-      data: newData,
-      grid: gridFromData(newData)
-    }
+    if (correct) { timer = TIMER_MAX }
+
+    return _.assign({}, state, {
+      timer:  timer,
+      data:   newData,
+      grid:   gridFromData(newData),
+      solved: _.every(newData, (clue) => clue.correct)
+    })
   }
 }
 
@@ -290,8 +364,12 @@ const ACTION_HANDLERS = {
 let data = getInitialData(DATA)
 
 const initialState = {
-  data: data,
-  grid: gridFromData(data)
+  code:    CODE,
+  solved:  false,
+  game:    'stopped',
+  timer:   TIMER_MAX,
+  data:    data,
+  grid:    gridFromData(data)
 }
 
 export default function puzzleReducer (state = initialState, action) {

@@ -1,5 +1,11 @@
 import { connect } from 'react-redux'
-import { increment, doubleAsync, setWordInput } from '../modules/puzzle'
+
+import {
+  setWordInput,
+  incrementTimer,
+  resetTimer,
+  setGameState,
+} from '../modules/puzzle'
 
 /*  This is a container component. Notice it does not contain any JSX,
     nor does it import React. This component is **only** responsible for
@@ -13,13 +19,20 @@ import Puzzle from '../components/Puzzle'
     implementing our wrapper around increment; the component doesn't care   */
 
 const mapDispatchToProps = {
-  setWordInput: setWordInput
+  setWordInput:   setWordInput,
+  setGameState:   setGameState,
+  incrementTimer: incrementTimer,
+  resetTimer:     resetTimer
 }
 
 function mapStateToProps (state) {
   return {
-    grid: state.puzzle.grid,
-    data: state.puzzle.data
+    code:   state.puzzle.code,
+    solved: state.puzzle.solved,
+    game:   state.puzzle.game,
+    timer:  state.puzzle.timer,
+    grid:   state.puzzle.grid,
+    data:   state.puzzle.data
   }
 }
 
