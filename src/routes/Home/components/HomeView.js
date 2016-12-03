@@ -37,9 +37,6 @@ export const HomeView = () => (
                 <span className='label label-primary'>Naar de puzzel →</span>
               </Link>
             </h3>
-              {
-            // <a className='goto__link' href='/puzzle'><span className='label label-primary'>Naar de puzzel →</span></a></h3>
-              }
           </div>
         </div>
       </div>

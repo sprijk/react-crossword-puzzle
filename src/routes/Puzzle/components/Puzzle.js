@@ -297,7 +297,7 @@ class Puzzle extends React.Component {
               this.props.game === 'started' && !this.props.solved
                 ? <div className='row'>
                     <div className='col-xs-12'>
-                      <p><em>Overige tijd</em></p>
+                      <p className='text-center'><em>Overige tijd</em></p>
                       <ProgressBar bsStyle='warning' striped active now={ this.props.timer }  label={`${this.props.timer}%`} />
                     </div>
                   </div>
@@ -305,7 +305,7 @@ class Puzzle extends React.Component {
                     {
                       this.props.solved
                         ? <div>
-                            <h4>Het is je gelukt!! De Code is:</h4>
+                            <h4 className='text-center'>Het is je gelukt!! De Code is:</h4>
                             <div className='row'>
                               <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
                                 <pre className='game__code text-center'>{ this.props.code }</pre>
@@ -313,15 +313,14 @@ class Puzzle extends React.Component {
                             </div>
                           </div>
                         : <div>
-                            <h4>{
+                            <h4 className='text-center'>{
                               this.props.game === 'over'
                               ? 'Helaas buiten de tijd!! Probeer het nog een keer.'
                               : 'Ben je er klaar voor?'
                             }</h4>
-                            <p>Druk op de knop om te starten!</p>
                             <div className='row'>
-                              <div className='col-xs-12'>
-                                <Button onClick={ this.onGo } bsStyle="primary" bsSize="large">Gaan met die banaan!</Button>
+                              <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
+                                <button onClick={ this.onGo } className="btn btn-primary btn-block btn-lg text-center">Start!</button>
                               </div>
                             </div>
                           </div>

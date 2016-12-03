@@ -10,7 +10,7 @@ export const Header = () => (
         alt='Sinterklaas'
         className='sintlogo'
         src={SintLogo} />
-      Sinterklaas 2016
+      Sinterklaas bij de familie Rijk - 2016
     </h1>
     <IndexLink to='/' activeClassName='route--active'>
       Uitleg
