@@ -35,19 +35,21 @@ import _ from 'lodash'
 export const PIVOTS = []
 
 export const DATA = [
-  { word: 'katten',     pivot: [ 0, 15], orientation: 'v', hint: 'Je huisdieren' },
-  { word: 'joris',      pivot: [ 1,  0], orientation: 'h', hint: 'De eerstgeboren bink van je gezin'},
-  { word: 'skien',      pivot: [ 1,  4], orientation: 'v', hint: 'Je favoriete sport in de winter'},
-  { word: 'hockey',     pivot: [ 2,  6], orientation: 'v', hint: 'Balsport met een stockey' },
-  { word: 'twee',       pivot: [ 2, 15], orientation: 'h', hint: 'Aantal zussen' },
-  { word: 'simon',      pivot: [ 3,  3], orientation: 'h', hint: 'De rots uit het Nieuwe Testament' },
-  { word: 'getrouwd',   pivot: [ 3, 13], orientation: 'v', hint: 'Je burgerlijke staat' },
-  { word: 'wielewaal',  pivot: [ 4,  9], orientation: 'v', hint: 'In deze straat woon je' },
-  { word: 'moeder',     pivot: [ 4, 11], orientation: 'h', hint: 'Dit ben je al ruim 4 jaar' },
-  { word: 'zeilen',     pivot: [ 6,  5], orientation: 'h', hint: 'Je favoriete hobby in de zomer' },
-  { word: 'verbouwing', pivot: [ 8,  8], orientation: 'h', hint: 'Doorgaande bezigheid aan het huis' },
-  { word: 'ram',        pivot: [10,  8], orientation: 'h', hint: 'Je sterrenbeeld' },
-  { word: 'wilhelmus',  pivot: [12,  7], orientation: 'h', hint: 'Tweede naam van je mannetje' }
+  { word: 'joris',      pivot: [ 0,  0], orientation: 'h', hint: 'De eerstgeboren bink van je gezin'},
+  { word: 'skien',      pivot: [ 0,  4], orientation: 'v', hint: 'Je favoriete sport in de winter'},
+  // { word: 'katten',     pivot: [ 0, 15], orientation: 'v', hint: 'Je huisdieren' },
+  // { word: 'joris',      pivot: [ 1,  0], orientation: 'h', hint: 'De eerstgeboren bink van je gezin'},
+  // { word: 'skien',      pivot: [ 1,  4], orientation: 'v', hint: 'Je favoriete sport in de winter'},
+  // { word: 'hockey',     pivot: [ 2,  6], orientation: 'v', hint: 'Balsport met een stockey' },
+  // { word: 'twee',       pivot: [ 2, 15], orientation: 'h', hint: 'Aantal zussen' },
+  // { word: 'simon',      pivot: [ 3,  3], orientation: 'h', hint: 'De rots uit het Nieuwe Testament' },
+  // { word: 'getrouwd',   pivot: [ 3, 13], orientation: 'v', hint: 'Je burgerlijke staat' },
+  // { word: 'wielewaal',  pivot: [ 4,  9], orientation: 'v', hint: 'In deze straat woon je' },
+  // { word: 'moeder',     pivot: [ 4, 11], orientation: 'h', hint: 'Dit ben je al ruim 4 jaar' },
+  // { word: 'zeilen',     pivot: [ 6,  5], orientation: 'h', hint: 'Je favoriete hobby in de zomer' },
+  // { word: 'verbouwing', pivot: [ 8,  8], orientation: 'h', hint: 'Doorgaande bezigheid aan het huis' },
+  // { word: 'ram',        pivot: [10,  8], orientation: 'h', hint: 'Je sterrenbeeld' },
+  // { word: 'wilhelmus',  pivot: [12,  7], orientation: 'h', hint: 'Tweede naam van je mannetje' }
 ]
 
 
@@ -166,8 +168,8 @@ export const getInputLetter = (data, row, col) => {
 }
 
 export const gridFromData = (data) => {
-  let rows = data.reduce((m, i) => _.max([i.orientation === 'v' ? i.pivot[0] + i.word.length : 0, m]), 0)
-  let cols = data.reduce((m, i) => _.max([i.orientation === 'h' ? i.pivot[1] + i.word.length : 0, m]), 0)
+  let rows = data.reduce((m, i) => _.max([i.orientation === 'v' ? i.pivot[0] + i.word.length : 0, m]), 1)
+  let cols = data.reduce((m, i) => _.max([i.orientation === 'h' ? i.pivot[1] + i.word.length : 0, m]), 1)
 
   return _.map (_.range(0, rows), (row) => {
     return _.map (_.range(0, cols), (col) => {
@@ -222,28 +224,7 @@ export function setGameState(value = 'stopped') {
   }
 }
 
-/*  This is a thunk, meaning it is a function that immediately
-    returns a function for lazy evaluation. It is incredibly useful for
-    creating async actions, especially when combined with redux-thunk!
-
-    NOTE: This is solely for demonstration purposes. In a real application,
-    you'd probably want to dispatch an action of COUNTER_DOUBLE and let the
-    reducer take care of this logic.  */
-
-// export const doubleAsync = () => {
-//   return (dispatch, getState) => {
-//     return new Promise((resolve) => {
-//       setTimeout(() => {
-//         dispatch(increment(getState().counter))
-//         resolve()
-//       }, 200)
-//     })
-//   }
-// }
-
 export const actions = {
-  // increment,
-  // doubleAsync,
   incrementTimer,
   resetTimer,
   setGameState,

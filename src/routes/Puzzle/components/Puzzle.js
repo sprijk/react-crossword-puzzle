@@ -1,9 +1,11 @@
 import React from 'react'
 import _ from 'lodash'
 import {
-  Modal,
   Button,
-  ProgressBar
+  Fade,
+  Modal,
+  ProgressBar,
+  Well
 } from 'react-bootstrap'
 import './Puzzle.scss'
 
@@ -264,7 +266,7 @@ const Clues = (props) => (
   </div>
 )
 
-let interval
+let interval = null
 
 class Puzzle extends React.Component {
   onWordInput = (index, value) => {
@@ -288,18 +290,27 @@ class Puzzle extends React.Component {
     return (
       <div style={{ margin: '0 auto' }} >
         <div className='row'>
-          <div className='col-md-offset-2 col-md-10' style={{
+          <div className='col-md-offset-2 col-md-8' style={{
             minHeight: '140px'
           }}>
             {
-              this.props.game === 'started'
-                ? <ProgressBar bsStyle='warning' now={ this.props.timer } />
+              this.props.game === 'started' && !this.props.solved
+                ? <div className='row'>
+                    <div className='col-xs-12'>
+                      <p><em>Overige tijd</em></p>
+                      <ProgressBar bsStyle='warning' striped active now={ this.props.timer }  label={`${this.props.timer}%`} />
+                    </div>
+                  </div>
                 : <div>
                     {
                       this.props.solved
                         ? <div>
-                            <h4>Het is je gelukt!!</h4>
-                            <p>De code is <span className='game__code'>{ this.props.code }</span></p>
+                            <h4>Het is je gelukt!! De Code is:</h4>
+                            <div className='row'>
+                              <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
+                                <pre className='game__code text-center'>{ this.props.code }</pre>
+                              </div>
+                            </div>
                           </div>
                         : <div>
                             <h4>{
@@ -336,24 +347,5 @@ class Puzzle extends React.Component {
     )
   }
 }
-
-/*
-        <Modal show={ this.props.game !== 'started' }>
-          <Modal.Header>
-            <Modal.Title>Ben je er klaar voor?</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Druk op de knop om te starten!</p>
-            <div className='row'>
-              <div className='col-xs-12'>
-                <Button onClick={ this.onGo } bsStyle="primary" bsSize="large">Gaan met die banaan!</Button>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-          </Modal.Footer>
-        </Modal>
-
-*/
 
 export default Puzzle

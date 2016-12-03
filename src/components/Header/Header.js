@@ -17,7 +17,7 @@ export const Header = () => (
     </IndexLink>
     {' · '}
     <Link to='/puzzle' activeClassName='route--active'>
-      De doe de puzzel
+      Doe de puzzel!
     </Link>
   </div>
 )

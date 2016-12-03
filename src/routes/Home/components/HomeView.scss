@@ -7,3 +7,10 @@
 .verse {
   padding-top: 2rem;
 }
+
+.goto__link {
+  $root: &;
+  &:hover {
+    text-decoration: none;
+  }
+}
