@@ -33,7 +33,7 @@ export const HomeView = () => (
         <div className='row' >
           <div className='col-xs-12'>
             <h3>
-              <Link className='goto__link' to={ '/puzzle' }>
+              <Link className='goto__link' to={'/puzzle'}>
                 <span className='label label-primary'>Naar de puzzel →</span>
               </Link>
             </h3>

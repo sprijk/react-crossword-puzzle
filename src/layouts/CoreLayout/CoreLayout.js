@@ -6,8 +6,8 @@ import '../../styles/core.scss'
 export const CoreLayout = ({ children }) => (
   <div className='container'>
     <Header />
-    <div className="row">
-      <div className="col-xs-12">
+    <div className='row'>
+      <div className='col-xs-12'>
         {children}
       </div>
     </div>
