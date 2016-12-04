@@ -2,4 +2,9 @@
   font-size: 200%;
   font-family: monospace;
   letter-spacing: 4px;
+  border: 2px solid #ccc;
+}
+
+.game__code--blink {
+  border: 2px solid #d40000;
 }

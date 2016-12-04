@@ -4,7 +4,7 @@ import {
   setWordInput,
   incrementTimer,
   resetTimer,
-  setGameState,
+  setGameState
 } from '../modules/puzzle'
 
 /*  This is a container component. Notice it does not contain any JSX,

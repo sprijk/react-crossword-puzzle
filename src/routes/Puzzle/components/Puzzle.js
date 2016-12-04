@@ -1,11 +1,8 @@
 import React from 'react'
 import _ from 'lodash'
 import {
-  Button,
-  Fade,
   Modal,
-  ProgressBar,
-  Well
+  ProgressBar
 } from 'react-bootstrap'
 import './Puzzle.scss'
 
@@ -25,16 +22,16 @@ class InputLetter extends React.Component {
     this.textInput.select()
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.props.index === 0) {
       this.focus()
     }
   }
 
-  render() {
+  render () {
     return (
       <div
-        style = {{
+        style={{
           display:     'block',
           float:       'left',
           width:       '32px',
@@ -44,12 +41,12 @@ class InputLetter extends React.Component {
         }}
       >
         <input
-          placeholder   = { this.props.inputLetter }
-          onKeyUp       = { (e) => this.onKeyUp(e) }
-          onFocus       = { () => this.onFocus() }
-          ref           = { (input) => { this.textInput = input }}
-          name          = { `letter-${ this.props.clue.nr }` }
-          style         = {{
+          placeholder={this.props.inputLetter}
+          onKeyUp={(e) => this.onKeyUp(e)}
+          onFocus={() => this.onFocus()}
+          ref={(input) => { this.textInput = input }}
+          name={`letter-${this.props.clue.nr}`}
+          style={{
             width:       '32px',
             height:      '32px',
             textAlign:   'center'
@@ -62,15 +59,15 @@ class InputLetter extends React.Component {
 
 class InputLetters extends React.Component {
   letterUpdate = (e, index, letter) => {
-    let word        = this.props.clue.word
-    let isLetter    = 64 < e.keyCode && e.keyCode < 91
+    let word = this.props.clue.word
+    let isLetter = e.keyCode > 64 && e.keyCode < 91
     let isBackspace = e.keyCode === 8
 
     if (isLetter) {
       if (this.refs[`letter-${index + 1}`]) {
         this.refs[`letter-${index + 1}`].focus()
       } else {
-        let letters = _.map(word.split(''), (letter, i) =>  this.refs[`letter-${i}`].textInput.value)
+        let letters = _.map(word.split(''), (letter, i) => this.refs[`letter-${i}`].textInput.value)
         this.props.onWordDone(this.props.clueIndex, letters.join(''))
       }
     } else if (isBackspace) {
@@ -87,14 +84,14 @@ class InputLetters extends React.Component {
           _.map(this.props.clue.word.split(''), (letter, i) => {
             return (
               <InputLetter
-                key         = { `letter-${i}` }
-                ref         = { `letter-${i}` }
-                index       = { i }
-                inputLetter = { this.props.clue.input.charAt(i) || '' }
-                clue        = { this.props.clue }
-                onInput     = { this.letterUpdate }
+                key={`letter-${i}`}
+                ref={`letter-${i}`}
+                index={i}
+                inputLetter={this.props.clue.input.charAt(i) || ''}
+                clue={this.props.clue}
+                onInput={this.letterUpdate}
               />
-              )
+            )
           })
         }
       </div>
@@ -119,7 +116,7 @@ class InputWord extends React.Component {
   render = () => (
     <div>
       <span
-        style = {{
+        style={{
           display:    'block',
           position:   'absolute',
           top:        '2px',
@@ -138,8 +135,8 @@ class InputWord extends React.Component {
           height:   '32px',
           cursor:   'pointer'
         }}
-        onClick={ this.open }
-      ></a>
+        onClick={this.open}
+       />
       <Modal show={this.props.game === 'started' && this.state.showModal} onHide={this.close}>
         <Modal.Header closeButton>
           <Modal.Title>Vul antwoord in voor:</Modal.Title>
@@ -151,15 +148,14 @@ class InputWord extends React.Component {
           <div className='row'>
             <div className='col-xs-12'>
               <InputLetters
-                clueIndex  = { this.props.clueIndex }
-                clue       = { this.props.clue }
-                onWordDone = { (index, value) => this.close(index, value) }
+                clueIndex={this.props.clueIndex}
+                clue={this.props.clue}
+                onWordDone={(index, value) => this.close(index, value)}
               />
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer>
-        </Modal.Footer>
+        <Modal.Footer />
       </Modal>
     </div>
   )
@@ -167,8 +163,8 @@ class InputWord extends React.Component {
 
 const Cell = (props) => (
   <div
-    className = 'grid-cell'
-    style     = {{
+    className='grid-cell'
+    style={{
       position:        'relative',
       width:           32,
       height:          32,
@@ -185,10 +181,10 @@ const Cell = (props) => (
         {
           props.cell.clue
             ? <InputWord
-                clueIndex   = { props.cell.clueIndex }
-                clue        = { props.cell.clue }
-                onWordInput = { props.onWordInput }
-                game        = { props.game }
+              clueIndex={props.cell.clueIndex}
+              clue={props.cell.clue}
+              onWordInput={props.onWordInput}
+              game={props.game}
               />
             : ''
         }
@@ -204,12 +200,12 @@ const Row = (props) => (
     {
       _.map(props.cols, (cell, i) =>
         <Cell
-          key         = { `cell-${props.row}-${i}` }
-          row         = { props.row }
-          col         = { i }
-          cell        = { cell }
-          game        = { props.game }
-          onWordInput = { props.onWordInput }
+          key={`cell-${props.row}-${i}`}
+          row={props.row}
+          col={i}
+          cell={cell}
+          game={props.game}
+          onWordInput={props.onWordInput}
         />
       )
     }
@@ -221,11 +217,11 @@ const Grid = (props) => {
     <div className='grid-main'>
       {
         _.map(props.grid, (cols, i) => <Row
-            key         = { `row-${i}` }
-            row         = { i }
-            cols        = { cols }
-            game        = { props.game }
-            onWordInput = { props.onWordInput }
+          key={`row-${i}`}
+          row={i}
+          cols={cols}
+          game={props.game}
+          onWordInput={props.onWordInput}
           />
         )
       }
@@ -245,7 +241,7 @@ const ClueList = (props) => (
     <dl className='dl-horizontal'>
       {
         _.chain(props.clues)
-          .map((clue, i) => clue.orientation === props.type ? <Clue key={ clue.nr } clue={ clue } /> : null)
+          .map((clue, i) => clue.orientation === props.type ? <Clue key={clue.nr} clue={clue} /> : null)
           .compact()
           .value()
       }
@@ -266,7 +262,84 @@ const Clues = (props) => (
   </div>
 )
 
-let interval = null
+class CodeNumberShow extends React.Component {
+  state = { show: false, turn: true, number: 0 }
+
+  startTurning = () => {
+    clearTimeout(this.turnTimeout)
+
+    if (!this.state.turn) { return }
+
+    let number = this.state.number + 1
+    if (number > 9) { number = 0 }
+
+    this.setState({ number: number})
+
+    this.turnTimeout = setTimeout(()=> { this.startTurning() }, 50)
+  }
+
+  componentDidMount = () => {
+    this.startTurning()
+    setTimeout(() => {
+      this.setState({ show: true })
+      setTimeout(() => {
+        this.setState({ turn: false, number: this.props.number })
+      }, this.props.interval)
+    }, this.props.index * this.props.interval)
+  }
+
+  componentWillUnmount = () => {
+    clearTimeout(this.turnTimeout)
+  }
+
+  render = () => {
+    if (this.state.show) {
+      return (
+        <span>{ this.state.number }</span>
+      )
+    } else {
+      return (
+        <span>&nbsp;</span>
+      )
+    }
+  }
+}
+
+class CodeShow extends React.Component {
+  state = { finished: false, blink: false, play: true }
+
+  blink = () => {
+    clearTimeout(this.blinkTimeout)
+    if (this.state.play) {
+      this.setState({ blink: !this.state.blink })
+      this.blinkTimeout = setTimeout(() => { this.blink() }, 500)
+    }
+  }
+
+  componentDidMount = () => {
+    setTimeout(() => {
+      this.blink()
+    }, this.props.code.length * 2000)
+  }
+
+  componentWillUnmount = () => {
+    this.setState({ play: false })
+    clearTimeout(this.blinkTimeout)
+  }
+
+  render = () => {
+    return (
+      <pre className={this.state.blink ? 'game__code text-center game__code--blink' : 'game__code text-center'}>{
+        _.map(this.props.code.split(''), (number, i) => {
+          return (
+            <CodeNumberShow key={`code-num-${i}`} number={number} index={i} interval={2000} />
+          )
+        })
+      }</pre>
+    )
+  }
+}
+
 
 class Puzzle extends React.Component {
   onWordInput = (index, value) => {
@@ -278,12 +351,16 @@ class Puzzle extends React.Component {
   }
 
   componentDidMount = () => {
-    clearInterval(interval)
-    interval = setInterval(() => {
-      if(this.props.game === 'started') {
+    clearInterval(this.incrementInterval)
+    this.incrementInterval = setInterval(() => {
+      if (this.props.game === 'started') {
         this.props.incrementTimer()
       }
     }, 1000)
+  }
+
+  componentWillUnmount = () => {
+    clearInterval(this.incrementInterval)
   }
 
   render = () => {
@@ -296,49 +373,49 @@ class Puzzle extends React.Component {
             {
               this.props.game === 'started' && !this.props.solved
                 ? <div className='row'>
-                    <div className='col-xs-12'>
-                      <p className='text-center'><em>Overige tijd</em></p>
-                      <ProgressBar bsStyle='warning' striped active now={ this.props.timer }  label={`${this.props.timer}%`} />
-                    </div>
+                  <div className='col-xs-12'>
+                    <p className='text-center'><em>Overige tijd</em></p>
+                    <ProgressBar bsStyle='warning' striped active now={this.props.timer} label={`${this.props.timer}%`} />
                   </div>
+                </div>
                 : <div>
-                    {
+                  {
                       this.props.solved
                         ? <div>
-                            <h4 className='text-center'>Het is je gelukt!! De Code is:</h4>
-                            <div className='row'>
-                              <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
-                                <pre className='game__code text-center'>{ this.props.code }</pre>
-                              </div>
+                          <h4 className='text-center'>Het is je gelukt!! De code is:</h4>
+                          <div className='row'>
+                            <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
+                              <CodeShow code={this.props.code} />
                             </div>
                           </div>
+                        </div>
                         : <div>
-                            <h4 className='text-center'>{
+                          <h4 className='text-center'>{
                               this.props.game === 'over'
                               ? 'Helaas buiten de tijd!! Probeer het nog een keer.'
                               : 'Ben je er klaar voor?'
                             }</h4>
-                            <div className='row'>
-                              <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
-                                <button onClick={ this.onGo } className="btn btn-primary btn-block btn-lg text-center">Start!</button>
-                              </div>
+                          <div className='row'>
+                            <div className='col-xs-offset-3 col-xs-6 col-sm-offset-4 col-sm-4'>
+                              <button onClick={this.onGo} className='btn btn-primary btn-block btn-lg text-center'>Start!</button>
                             </div>
                           </div>
+                        </div>
                     }
-                  </div>
+                </div>
             }
           </div>
         </div>
         <div className='row'>
           <div className='col-lg-7 col-md-9'>
             <Grid
-              game        = { this.props.game }
-              grid        = { this.props.grid }
-              onWordInput = { this.onWordInput }
+              game={this.props.game}
+              grid={this.props.grid}
+              onWordInput={this.onWordInput}
             />
           </div>
           <div className='col-lg-5 col-md-3'>
-            <Clues data={ this.props.data } />
+            <Clues data={this.props.data} />
           </div>
         </div>
 

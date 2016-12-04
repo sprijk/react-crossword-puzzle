@@ -12,19 +12,19 @@ import {
 } from 'routes/Puzzle/modules/puzzle'
 
 var DATA = [
-  { word: 'katten',     pivot: [ 0, 15], orientation: 'v', hint: 'Je huisdieren' },
-  { word: 'joris',      pivot: [ 1,  0], orientation: 'h', hint: 'De eerstgeboren bink van je gezin'},
-  { word: 'skien',      pivot: [ 1,  4], orientation: 'v', hint: 'Je favoriete sport in de winter'},
-  { word: 'hockey',     pivot: [ 2,  6], orientation: 'v', hint: 'Balsport met een stockey' },
-  { word: 'twee',       pivot: [ 2, 15], orientation: 'h', hint: 'Aantal zussen' },
-  { word: 'simon',      pivot: [ 3,  3], orientation: 'h', hint: 'De rots uit het Nieuwe Testament' },
-  { word: 'getrouwd',   pivot: [ 3, 13], orientation: 'v', hint: 'Je burgerlijke staat' },
-  { word: 'wielewaal',  pivot: [ 4,  9], orientation: 'v', hint: 'In deze straat woon je' },
-  { word: 'moeder',     pivot: [ 4, 11], orientation: 'h', hint: 'Dit ben je al ruim 4 jaar' },
-  { word: 'zeilen',     pivot: [ 6,  5], orientation: 'h', hint: 'Je favoriete hobby in de zomer' },
-  { word: 'verbouwing', pivot: [ 8,  8], orientation: 'h', hint: 'Doorgaande bezigheid aan het huis' },
-  { word: 'ram',        pivot: [10,  8], orientation: 'h', hint: 'Je sterrenbeeld' },
-  { word: 'wilhelmus',  pivot: [12,  7], orientation: 'h', hint: 'Tweede naam van je mannetje' }
+  { word: 'katten', pivot: [0, 15], orientation: 'v', hint: 'Je huisdieren' },
+  { word: 'joris', pivot: [1, 0], orientation: 'h', hint: 'De eerstgeboren bink van je gezin' },
+  { word: 'skien', pivot: [1, 4], orientation: 'v', hint: 'Je favoriete sport in de winter' },
+  { word: 'hockey', pivot: [2, 6], orientation: 'v', hint: 'Balsport met een stockey' },
+  { word: 'twee', pivot: [2, 15], orientation: 'h', hint: 'Aantal zussen' },
+  { word: 'simon', pivot: [3, 3], orientation: 'h', hint: 'De rots uit het Nieuwe Testament' },
+  { word: 'getrouwd', pivot: [3, 13], orientation: 'v', hint: 'Je burgerlijke staat' },
+  { word: 'wielewaal', pivot: [ 4, 9], orientation: 'v', hint: 'In deze straat woon je' },
+  { word: 'moeder', pivot: [4, 11], orientation: 'h', hint: 'Dit ben je al ruim 4 jaar' },
+  { word: 'zeilen', pivot: [6, 5], orientation: 'h', hint: 'Je favoriete hobby in de zomer' },
+  { word: 'verbouwing', pivot: [8, 8], orientation: 'h', hint: 'Doorgaande bezigheid aan het huis' },
+  { word: 'ram', pivot: [10, 8], orientation: 'h', hint: 'Je sterrenbeeld' },
+  { word: 'wilhelmus', pivot: [12, 7], orientation: 'h', hint: 'Tweede naam van je mannetje' }
 ]
 
 let data = getInitialData(DATA)
@@ -32,8 +32,8 @@ let data = getInitialData(DATA)
 const initialState = {
   counter: 0,
   data:    data,
-  rows:    data.reduce((m, i) => Math.max(i.orientation === 'v' ? i.pivot[0] + i.word.length - 1: 0, m), 0),
-  cols:    data.reduce((m, i) => Math.max(i.orientation === 'h' ? i.pivot[1] + i.word.length - 1: 0, m), 0)
+  rows:    data.reduce((m, i) => Math.max(i.orientation === 'v' ? i.pivot[0] + i.word.length - 1 : 0, m), 0),
+  cols:    data.reduce((m, i) => Math.max(i.orientation === 'h' ? i.pivot[1] + i.word.length - 1 : 0, m), 0)
 }
 
 describe('(Redux Module) Puzzle', () => {
@@ -96,22 +96,22 @@ describe('(Redux Module) Puzzle', () => {
   describe('(helper fn) setInputLetter', () => {
     it('should return a new string with the character at `index` added or replaces', () => {
       expect(setInputLetter('simon', 'b', 0)).to.equal('bimon')
-      expect(setInputLetter(   'si', 'b', 1)).to.equal('sb')
-      expect(setInputLetter('', 'b',      2)).to.equal('  b')
+      expect(setInputLetter('si', 'b', 1)).to.equal('sb')
+      expect(setInputLetter('', 'b', 2)).to.equal('  b')
       expect(setInputLetter('  h  ', 'b', 3)).to.equal('  hb ')
       expect(setInputLetter('  h  ', 'b', 7)).to.equal('  h    b')
-      expect(setInputLetter(     '', 'b', 0)).to.equal('b')
-      expect(setInputLetter(   'si', 'b', 0)).to.equal('bi')
+      expect(setInputLetter('', 'b', 0)).to.equal('b')
+      expect(setInputLetter('si', 'b', 0)).to.equal('bi')
     })
   })
 
   describe('(helper fn) isInWord', () => {
     describe('horizontal words', () => {
-      let clue = { word: 'hockey', pivot: [ 2,  6], orientation: 'h' }
+      let clue = { word: 'hockey', pivot: [ 2, 6], orientation: 'h' }
 
       it('should return true if inside a horizontal word', () => {
-        expect(isInWord(clue, 2,  6)).to.equal(true)
-        expect(isInWord(clue, 2,  7)).to.equal(true)
+        expect(isInWord(clue, 2, 6)).to.equal(true)
+        expect(isInWord(clue, 2, 7)).to.equal(true)
         expect(isInWord(clue, 2, 11)).to.equal(true)
       })
       it('should return false if outside a horizontal word', () => {
@@ -122,7 +122,7 @@ describe('(Redux Module) Puzzle', () => {
       })
     })
     describe('vertical words', () => {
-      let clue = { word: 'hockey', pivot: [ 2,  6], orientation: 'v' }
+      let clue = { word: 'hockey', pivot: [ 2, 6], orientation: 'v' }
 
       it('should return true if inside a vertical word', () => {
         expect(isInWord(clue, 2, 6)).to.equal(true)
@@ -146,20 +146,20 @@ describe('(Redux Module) Puzzle', () => {
 
   describe('(helper fn) getLetterInClue', () => {
     describe('horizontal', () => {
-      let clue = { word: 'hockey', pivot: [2,  6], orientation: 'h' }
+      let clue = { word: 'hockey', pivot: [2, 6], orientation: 'h' }
       it('should get the right letter in a word', () => {
-        expect(getLetterInClue(clue, 2,  5)).to.equal(undefined)
-        expect(getLetterInClue(clue, 2,  6)).to.equal('h')
-        expect(getLetterInClue(clue, 2,  7)).to.equal('o')
-        expect(getLetterInClue(clue, 2,  8)).to.equal('c')
-        expect(getLetterInClue(clue, 2,  9)).to.equal('k')
+        expect(getLetterInClue(clue, 2, 5)).to.equal(undefined)
+        expect(getLetterInClue(clue, 2, 6)).to.equal('h')
+        expect(getLetterInClue(clue, 2, 7)).to.equal('o')
+        expect(getLetterInClue(clue, 2, 8)).to.equal('c')
+        expect(getLetterInClue(clue, 2, 9)).to.equal('k')
         expect(getLetterInClue(clue, 2, 10)).to.equal('e')
         expect(getLetterInClue(clue, 2, 11)).to.equal('y')
         expect(getLetterInClue(clue, 2, 12)).to.equal(undefined)
       })
     })
     describe('vertical', () => {
-      let clue = { word: 'hockey', pivot: [2,  6], orientation: 'v' }
+      let clue = { word: 'hockey', pivot: [2, 6], orientation: 'v' }
       it('should get the right letter in a word', () => {
         expect(getLetterInClue(clue, 1, 6)).to.equal(undefined)
         expect(getLetterInClue(clue, 2, 6)).to.equal('h')
@@ -191,8 +191,5 @@ describe('(Redux Module) Puzzle', () => {
   //     expect(getProjectedInput(DATA, 7)).to.equal('h')
   //   })
   // })
-
 })
-
-
 
